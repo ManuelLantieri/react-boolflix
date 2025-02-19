@@ -1,37 +1,26 @@
-import React, { useState } from "react";
-import axios from "axios";
-import SearchBar from "./components/SearchBar";
-import MovieList from "./components/MovieList";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DefaultLayout from "./layouts/DefaultLayouts";
+import HomePages from "./pages/HomePage";
+import Categories from "./pages/Categories";
+import { CategoriesDataProvider } from "./contexts/CategoriesDataContext";
+import { PromoProvider } from "./contexts/PromoContext";
+import Promo from "./components/Promo";
+import Message from "./components/Message";
 
-const App = () => {
-  const [movies, setMovies] = useState([]);
-  const API_KEY = "9284ae6835d4b85d3e8bf73ddb4ee5a8";
-
-  const searchMovies = async (query) => {
-    try {
-      const response = await axios.get(
-        `https://api.themoviedb.org/3/search/movie`,
-        {
-          params: {
-            api_key: API_KEY,
-            query: query,
-            language: "it-IT",
-          },
-        }
-      );
-      setMovies(response.data.results);
-    } catch (error) {
-      console.error("Errore nella ricerca del film", error);
-    }
-  };
-
+export default function App() {
   return (
-    <div className="container">
-      <h1>Search Movie</h1>
-      <SearchBar onSearch={searchMovies} />
-      <MovieList movies={movies} />
-    </div>
+    <PromoProvider message="">
+      <Promo></Promo>
+      <CategoriesDataProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route Component={DefaultLayout}>
+              <Route index Component={HomePages} />
+              <Route path="/categories" Component={Categories} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CategoriesDataProvider>
+    </PromoProvider>
   );
-};
-
-export default App;
+}
